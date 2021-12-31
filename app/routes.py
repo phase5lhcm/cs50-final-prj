@@ -3,6 +3,7 @@ from flask import render_template, redirect, url_for, flash, get_flashed_message
 from app.models import Product, User
 from app.forms import LoginForm, RegisterForm
 from app import db
+from flask_login import login_user
 
 @app.route("/")
 @app.route("/home")
@@ -22,7 +23,7 @@ def register_page():
     if form.validate_on_submit():
         create_user = User(username=form.username.data, 
                            email=form.email.data, 
-                           password=form.password1.data)
+                           password_hash=form.password1.data)
         db.session.add(create_user)
         db.session.commit()
         return redirect(url_for('showroom'))
@@ -35,4 +36,12 @@ def register_page():
 @app.route("/login", methods=['GET', 'POST'])
 def login_page():
     form = LoginForm()
+    if form.validate_on_submit():
+        user_login = User.query.filter_by(email=form.email.data).first()
+        if user_login and user_login.verify_password(check_pwrd=form.password.data):
+            login_user(user_login)
+            flash(f"{user_login}, you have successfully logged in.")
+            return redirect(url_for("showroom"))
+        else:
+            flash('Incorrect email and password combination. Please try again, or register for an account', category="danger")
     return render_template('loginPage.html', form=form)
