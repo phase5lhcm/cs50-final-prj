@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, flash, get_flashed_messages
 from app.models import Product, User
 from app.forms import RegisterForm
 from app import db
@@ -29,6 +29,6 @@ def register_page():
     #Let's check if there are form errors per the validators
     if form.errors != {}:
         for err_msg in form.errors.values():
-            print(f'Error creating user: {err_msg}')
+            flash(f'Error creating user: {err_msg}', category='danger')
     return render_template('registerPage.html', form=form)
     
