@@ -11,12 +11,13 @@ content%}
     </tr>
   </thead>
   <tbody>
-    {% for item in items%}
+    {% for product in products%}
     <tr>
-      <td>{{item.id}}</td>
-      <td>{{item.name}}</td>
-      <td>{{item.barcode}}</td>
-      <td>{{item.price}}</td>
+      <td>{{product.id}}</td>
+      <td>{{product.name}}</td>
+      <td>{{product.barcode}}</td>
+      <td>{{product.price}}</td>
+      <td>{{product.owner_id}}</td>
       <td>
         <button class="btn btn-outline btn-info">More info</button>
         <button class="btn btn-outline btn-success">Purchase This item</button>
