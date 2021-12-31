@@ -1,7 +1,7 @@
 from app import app
 from flask import render_template, redirect, url_for, flash, get_flashed_messages
 from app.models import Product, User
-from app.forms import RegisterForm
+from app.forms import LoginForm, RegisterForm
 from app import db
 
 @app.route("/")
@@ -22,7 +22,7 @@ def register_page():
     if form.validate_on_submit():
         create_user = User(username=form.username.data, 
                            email=form.email.data, 
-                           password_hash=form.password1.data)
+                           password=form.password1.data)
         db.session.add(create_user)
         db.session.commit()
         return redirect(url_for('showroom'))
@@ -32,3 +32,7 @@ def register_page():
             flash(f'Error creating user: {err_msg}', category='danger')
     return render_template('registerPage.html', form=form)
     
+@app.route("/login", methods=['GET', 'POST'])
+def login_page():
+    form = LoginForm()
+    return render_template('loginPage.html', form=form)

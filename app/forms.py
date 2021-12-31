@@ -20,3 +20,20 @@ class RegisterForm(FlaskForm):
     password1 = PasswordField(label='Password', validators=[Length(min=6), DataRequired()])
     password_confirmation = PasswordField(label='Confirm password', validators=[EqualTo('password1'), DataRequired()])
     submitBtn = SubmitField(label='Create Account')
+    
+class LoginForm(FlaskForm):
+    
+    def validate_username(self, check_username):
+        #query documents to see if user already exists in db with this username
+        user = User.query.filter_by(username=check_username.data).first()
+        if user:
+            raise ValidationError('Username already exists.')
+    def validate_email(self, check_email):
+        email = User.query.filter_by(email=check_email.data).first()
+        if email: 
+            raise ValidationError('Email addrress already exists, please log in with your account.')
+        
+    # username = StringField(label='Username', validators=[DataRequired()])
+    email = StringField(label='Email', validators=[DataRequired()])
+    password = PasswordField(label='Password', validators=[ DataRequired()])
+    submitBtn = SubmitField(label='Sign In')
