@@ -28,10 +28,10 @@ def register_page():
         db.session.add(create_user)
         db.session.commit()
         print(create_user)
-        login_user(user_login)
-        flash(f"Welcome! You are now logged in as {user_login.username}", category="success")
-        print('create_user', create_user)
-        return render_template(url_for('showroom.html'))
+        # login_user(user_login)
+        # flash(f"Welcome! You are now logged in as {user_login.username}", category="success")
+        # print('create_user', create_user)
+        return redirect(url_for('showroom'))
     #Let's check if there are form errors per the validators
     if form.errors != {}:
         for err_msg in form.errors.values():
@@ -42,7 +42,7 @@ def register_page():
 def login_page():
     form = LoginForm()
     if form.validate_on_submit():
-        user_login = User.query.filter_by(username=form.username.data).first()
+        user_login = User.query.filter_by(username=form.email.data).first()
         # print(f"user: {user_login}")
         if user_login and user_login.verify_password(check_pwrd=form.password.data
         ):
