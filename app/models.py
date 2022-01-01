@@ -1,3 +1,4 @@
+from wtforms.validators import Length
 from app import db, login_manager
 from app import bcrypt
 from flask_login import UserMixin
@@ -15,16 +16,25 @@ class User(db.Model, UserMixin):
     products = db.relationship('Product', backref='owner',lazy=True)
     
     @property
+    def refactor_budget(self):
+        if len(str(self.budget)) >= 4:
+            return f'${str(self.budget)[:-3]},{str(self.budget)[-3:]}'
+        else:
+            return f"${self.budget}"
+        
+    @property
     def password(self):
         return self.password
     
     @password.setter
     def password(self, plain_text_password): 
-         bcrypt.generate_password_hash(plain_text_password).decode('utf-8')
+        #let's override what is stored in password_hash field
+         self.password_hash = bcrypt.generate_password_hash(plain_text_password).decode('utf-8')
+         return True
     
     def verify_password(self, check_pwrd):
         #check_password_hash returns a bool
-        return bcrypt.check_password_hash(self.password, check_pwrd)
+        return bcrypt.check_password_hash(self.password_hash, check_pwrd)
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)

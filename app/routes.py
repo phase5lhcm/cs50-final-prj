@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, flash, get_flashed_message
 from app.models import Product, User
 from app.forms import LoginForm, RegisterForm
 from app import db
-from flask_login import login_user
+from flask_login import login_user, logout_user, login_required
 
 @app.route("/")
 @app.route("/home")
@@ -11,6 +11,7 @@ def home_page():
     return render_template("Homepage.html")
 
 @app.route('/showroom')
+@login_required
 def showroom():
     #let's return all Products in db
     products = Product.query.all()
@@ -23,10 +24,14 @@ def register_page():
     if form.validate_on_submit():
         create_user = User(username=form.username.data, 
                            email=form.email.data, 
-                           password_hash=form.password1.data)
+                           password=form.password1.data)
         db.session.add(create_user)
         db.session.commit()
-        return redirect(url_for('showroom'))
+        print(create_user)
+        login_user(user_login)
+        flash(f"Welcome! You are now logged in as {user_login.username}", category="success")
+        print('create_user', create_user)
+        return render_template(url_for('showroom.html'))
     #Let's check if there are form errors per the validators
     if form.errors != {}:
         for err_msg in form.errors.values():
@@ -37,11 +42,19 @@ def register_page():
 def login_page():
     form = LoginForm()
     if form.validate_on_submit():
-        user_login = User.query.filter_by(email=form.email.data).first()
-        if user_login and user_login.verify_password(check_pwrd=form.password.data):
+        user_login = User.query.filter_by(username=form.username.data).first()
+        # print(f"user: {user_login}")
+        if user_login and user_login.verify_password(check_pwrd=form.password.data
+        ):
             login_user(user_login)
             flash(f"{user_login}, you have successfully logged in.")
-            return redirect(url_for("showroom"))
+            return redirect(url_for('showroom'))
         else:
             flash('Incorrect email and password combination. Please try again, or register for an account', category="danger")
     return render_template('loginPage.html', form=form)
+    
+@app.route("/logout", methods=['POST'])
+def logout_page():
+    logout_user()
+    flash("Logout successful", category="info")
+    return redirect(url_for("home_page"))

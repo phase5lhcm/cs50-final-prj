@@ -33,7 +33,7 @@ class LoginForm(FlaskForm):
         if email: 
             raise ValidationError('Email addrress already exists, please log in with your account.')
         
-    # username = StringField(label='Username', validators=[DataRequired()])
+    username = StringField(label='Username', validators=[DataRequired()])
     email = StringField(label='Email', validators=[DataRequired()])
     password = PasswordField(label='Password', validators=[ DataRequired()])
     loginBtn = SubmitField(label='Sign In')
