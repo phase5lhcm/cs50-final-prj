@@ -11,7 +11,7 @@ def home_page():
     return render_template("Homepage.html")
 
 @app.route('/showroom')
-@login_required
+# @login_required
 def showroom():
     #let's return all Products in db
     products = Product.query.all()
